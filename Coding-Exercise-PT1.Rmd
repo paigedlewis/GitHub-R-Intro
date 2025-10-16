@@ -1,0 +1,53 @@
+---
+title: "Coding Exercises Part 1"
+author: "Paige Lewis"
+date: "2025-10-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+**PART 1**
+setup
+```{r}
+source("setup.R")
+```
+
+load data
+```{r}
+data("knz_bison")
+```
+
+Create a new column in the bison dataset that calculates the individual’s age at the time of observation.
+
+```{r}
+knz_bison <- knz_bison %>%
+  mutate(age = rec_year - animal_yob)
+```
+
+
+Write a function that will first filter the bison dataset based on any user-specified weight threshold (returning the filtered dataset).
+
+
+taking median of weights, and filtering to use only median and greater - ideally filtering (to some extent) the age of the bison as well
+```{r}
+median(knz_bison$animal_weight, na.rm = TRUE)
+```
+777
+
+```{r}
+bigbois <- knz_bison %>% 
+  filter(animal_weight > 777, na.rm = TRUE)
+```
+
+
+Create a boxplot showing weight distribution between male and female bison, and then conduct a t-test to see if weight is significantly difference between males and females.
+
+```{r}
+bigbois %>% 
+  ggplot() +
+  geom_boxplot(mapping = aes(x = animal_sex, y = animal_weight, fill = animal_sex))
+```
