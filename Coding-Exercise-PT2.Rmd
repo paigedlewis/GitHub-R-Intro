@@ -1,0 +1,133 @@
+---
+title: "coding_exercise"
+author: "Paige Lewis"
+date: "2025-10-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+load
+```{r}
+source("setup.R")
+```
+
+**PART 2**
+## The coding exercise:
+
+Work through the steps below to complete this exercise (to the best of your ability) and then save, add, commit and push this file with your coding edits to your forked repo and follow the instructions above for completing the assignment via creating and reviewing a pull request.
+
+Load in the tidyverse (only package(s) needed for this exercise:
+
+```{r}
+library(tidyverse)
+```
+
+Read in the 'kenya_county_climates.csv' in the 'data/' folder and assign it to an environmental variable.
+
+```{r}
+  setwd("C:/RProjects/GitHub-R-Intro/Intro-Git-GitHub/data")
+kenya_county_climates <- read.csv("kenya_county_climates.csv")
+```
+
+Write a chain of operations that does the following:
+
+1.  `select()` just the columns that have "Precipitation" in the name (so we are only interested in the precipitation data), AND the 'County' column.
+
+2.  `filter()` all the rows where 'Precipitation_585_90' is **greater than** the mean precipitation for all counties.
+
+3.  `pivot_longer()` so we have one column for all precip values and one column with the value's associated variables (while keeping County as its own column too).
+
+New data frame w just precipitation
+```{r}
+precip <- kenya_county_climates %>% 
+  select(County, contains("Precipitation"))
+```
+
+make all of the data from the precip data frame into one singlular vector to take the mean 
+```{r}
+singleVector <- unlist(precip)
+```
+
+overall mean of these precip values
+```{r}
+overallMean <- mean(singleVector, na.rm = TRUE)
+print(overallMean)
+```
+[1] 128.2744
+
+```{r}
+precip2 <- kenya_county_climates %>%
+  select(contains("Precipitation"))
+
+```
+
+make all of the data from the precip data frame into one singlular vector to take the mean 
+```{r}
+singleVector <- unlist(precip)
+```
+
+overall mean of these precip values
+```{r}
+overallMean <- mean(singleVector, na.rm = TRUE)
+print(overallMean)
+```
+[1] 128.2744
+
+data frame with JUST the precipitation values that are greater than the overall mean
+```{r}
+precip2 <- precip %>% 
+  filter(Precipitation_585_90 > overallMean)
+```
+
+```{r}
+precip_long <- precip %>%
+  pivot_longer(
+    cols = contains("Precipitation"), 
+    names_to = "Time_Frame", 
+    values_to = "Precipitation"
+  )
+```
+
+
+Question: How many counties have predicted precip values greater than the total county average?
+
+Using the new dataset created above, create a bar plot of precipitation for each time frame for each county using `facet_wrap()`
+
+```{r}
+means <- precip_long %>%
+  group_by(County) %>%
+  summarize(mean_precip = mean(Precipitation, na.rm = TRUE)) %>%
+  filter(mean_precip > overallMean)
+```
+
+
+```{r}
+precip_long %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = Time_Frame, y = Precipitation, fill = Time_Frame), stat = "identity") + 
+  geom_hline(yintercept = overallMean, color = "black", linetype = "dashed") +
+    facet_wrap(~ County, scales = "free_y") +
+    labs(
+      title = "Predicted Precipitation by County and Time Frame", 
+      x = "Time Frame", 
+      y = "Precipiation"
+    ) + 
+  theme(
+    axis.text = element_text(angle = 45, hjust = 1)
+  )
+```
+
+CHALLENGE:
+
+The chart above is messy since we have so many counties. Instead, use `map()` to create an individual bar plot for each County (hint: create a vector of county names from the data, and building off the ggplot code you made above, add in a line to `filter()` out each county (i.e., .x) before creating the plot. AND, no more need to `facet_wrap()` here).
+
+There are many ways to do this!
+
+```{r}
+
+```
+
+
